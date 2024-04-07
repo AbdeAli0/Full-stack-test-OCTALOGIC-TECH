@@ -2,15 +2,21 @@
 const { Vehicle, CarType, BikeType, Booking } = require('../models');
 
 // Sample data (replace with actual data retrieval logic from the database)
-const bookings = [
-  { id: 1, name: 'Booking 1' },
-  { id: 2, name: 'Booking 2' }
-];
 
 // Controller function to get all bookings
-const getAllBookings = (req, res) => {
-  // Logic to fetch bookings from the database
-  res.json(bookings);
+const getAllBookings = async (req, res) => {
+  try {
+    // Fetch all bookings from the database, excluding the VehicleId column
+    const bookings = await Booking.findAll({
+      attributes: { exclude: ['VehicleId'] }
+    });
+
+    // Send the bookings data as JSON response
+    res.json(bookings);
+  } catch (error) {
+    console.error('Error retrieving bookings:', error);
+    res.status(500).json({ error: 'An error occurred while fetching bookings' });
+  }
 };
 
 // Controller function to create a booking
@@ -30,10 +36,35 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ error: 'Invalid booking dates' });
     }
 
-    // Check if the specified car type exists
-    const carType = await CarType.findByPk(typeId);
-    if (!carType) {
-      return res.status(404).json({ error: 'Car type not found' });
+    console.log(type);
+
+    // Check if the specified type is either car or bike
+    if (type !== 'cartype' && type !== 'biketype') {
+      return res.status(400).json({ error: 'Invalid vehicle type' });
+    }
+
+    const queryOptions = {};
+    if (type) queryOptions.type = type;
+    if (modelName) queryOptions.typeId = typeId;
+
+    // Check if the specified vehicle type exists
+    const vehicleType = await Vehicle.findOne({
+      where: queryOptions
+    });    // if (type === 'cartype') {
+    //   vehicleType = await CarType.findByPk(typeId);
+    // } else if (type === 'biketype') {
+    //   vehicleType = await BikeType.findByPk(typeId);
+    // }
+    console.log("vehicleType", vehicleType.availability);
+
+    if (!vehicleType) {
+      return res.status(404).json({ error: 'Vehicle type not found' });
+    }
+
+
+    // Check if the vehicle is availability
+    if (!vehicleType.availability) {
+      return res.status(409).json({ error: 'Vehicle not available for booking' });
     }
 
     // Create a new booking record
@@ -47,6 +78,9 @@ const createBooking = async (req, res) => {
       bookingEnd: end.toString()
     });
 
+    // Update the availability of the vehicle
+    await vehicleType.update({ availability: false });
+
     // Return the newly created booking
     return res.json({ message: 'Booking created successfully', booking: newBooking });
   } catch (error) {
@@ -54,6 +88,7 @@ const createBooking = async (req, res) => {
     return res.status(500).json({ error: 'An error occurred while adding booking' });
   }
 };
+
 
 module.exports = {
   getAllBookings,

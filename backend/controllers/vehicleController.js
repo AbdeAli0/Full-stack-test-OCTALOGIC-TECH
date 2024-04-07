@@ -24,29 +24,29 @@ const getAllVehicleTypes = async (req, res) => {
 };
 
 const getAllVehicles = async (req, res) => {
-  const { vehicle, type } = req.body;
+  const { vehicle, typeId } = req.body;
 
   try {
     if (vehicle === 'cartype') {
       // Find vehicles based on car type
-      const carType = await CarType.findOne({ where: { name: type } });
+      const carType = await CarType.findOne({ where: { id: typeId } });
 
       if (!carType) {
         return res.status(404).json({ error: 'Car type not found' });
       }
 
       const vehicles = await Vehicle.findAll({ where: { type: vehicle, typeId: carType.id } });
-      return res.json({ vehicles });
+      return res.json( vehicles );
     } else if (vehicle === 'biketype') {
       // Find vehicles based on bike type
-      const bikeType = await BikeType.findOne({ where: { name: type } });
+      const bikeType = await BikeType.findOne({ where: { id: typeId } });
 
       if (!bikeType) {
         return res.status(404).json({ error: 'Bike type not found' });
       }
 
       const vehicles = await Vehicle.findAll({ where: { type: vehicle, typeId: bikeType.id } });
-      return res.json({ vehicles });
+      return res.json(vehicles );
     } else {
       return res.status(400).json({ error: 'Invalid vehicle type. Must be "cartype" or "biketype".' });
     }

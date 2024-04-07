@@ -12,7 +12,7 @@ module.exports = {
             {
                 firstName: 'Abde',
                 lastName: 'Ali',
-                type: 'carType',
+                type: 'cartype',
                 typeId: 1,
                 modelName: 'BMW 6 Series',
                 bookingStart: currentDate.toString(),

@@ -1,10 +1,14 @@
 // app.js
 const express = require('express');
+var cors = require('cors')
+
 const app = express();
 const models = require('./models'); // Require the models index file
 
 // Middleware
 app.use(express.json());
+app.use(cors())
+
 
 // Load routes
 const bookingRoutes = require('./routes/bookingRoutes');

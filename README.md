@@ -18,14 +18,21 @@ https://youtu.be/BxdSUGBs0gM?si=xIzaDBz8p9kCdXzB
 ### `npm install`
 
 ### Step-2
+**_NOTE:_**  config.json have all the DB config for development, test & production
+
+<br/>
+
 #### Database Creation, Migration & Seeding commands
 ### `npx sequelize-cli db:create`
 ### `npx sequelize-cli db:migrate`
 ### `npx sequelize-cli db:seed:all`
 
+
+
 ### Step-3
 ### Production `npm start`
 ### Development `npm run dev`
+
 
 <br/>
 
